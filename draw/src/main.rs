@@ -2,10 +2,7 @@
 #![feature(start)]
 #![feature(exclusive_range_pattern)]
 
-use draw::{Mode3Display, PaletteColor, Tile8bppDisplay};
-
 use core::convert::{Infallible, TryInto};
-
 use embedded_graphics::{
     fonts::{Font6x8, Text},
     image::Image,
@@ -14,7 +11,7 @@ use embedded_graphics::{
     primitives::{Rectangle, Triangle},
     style::{PrimitiveStyle, TextStyle},
 };
-
+use embedded_graphics_gba::{Mode3Display, PaletteColor, Tile8bppDisplay};
 use gba::{
     io::{
         display::{DisplayControlSetting, DisplayMode, DisplayStatusSetting, DISPCNT, DISPSTAT},
@@ -26,10 +23,8 @@ use gba::{
     vram::get_8bpp_character_block,
     Color,
 };
-
-use tinytga::Tga;
-
 use panic_abort as _;
+use tinytga::Tga;
 
 // color palette table
 const COLORS: [Bgr555; 8] = [

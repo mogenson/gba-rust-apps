@@ -1,13 +1,10 @@
 [package]
-name = "draw"
+name = "embedded-graphics-gba"
 version = "0.1.0"
 authors = ["Michael Mogenson <michael.mogenson@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-panic-abort = "0.3.2"
 #gba = { git = "https://github.com/rust-console/gba" }
 gba = { path = "../../gba" }
 embedded-graphics = "0.6.2"
-embedded-graphics-gba = { path = "../embedded-graphics-gba" }
-tinytga = { version = "0.3.2", features = ["graphics"] }

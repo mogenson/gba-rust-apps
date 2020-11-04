@@ -1,0 +1,13 @@
+[config]
+skip_core_tasks = true
+
+[tasks.assemble]
+
+[tasks.build]
+toolchain = "nightly"
+command = "cargo"
+args = ["build", "--release"]
+
+[tasks.rom]
+
+[tasks.mgba]
