@@ -1,2 +1,7 @@
 [workspace]
-members = ["draw", "uart-echo", "embedded-graphics-gba"]
+members = [
+    "aux-display",
+    "draw",
+    "embedded-graphics-gba",
+    "uart-echo",
+]

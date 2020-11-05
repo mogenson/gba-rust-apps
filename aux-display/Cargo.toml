@@ -1,0 +1,12 @@
+[package]
+name = "aux-display"
+version = "0.1.0"
+authors = ["Michael Mogenson <michael.mogenson@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+panic-abort = "0.3.2"
+#gba = { git = "https://github.com/rust-console/gba", features = ["embedded_hal"]}
+gba = { path = "../../gba", features = ["embedded_hal"] }
+embedded-hal = "0.2.4"
+nb = "1.0.0"
