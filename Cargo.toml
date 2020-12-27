@@ -3,5 +3,6 @@ members = [
     "aux-display",
     "draw",
     "embedded-graphics-gba",
+    "keypad",
     "uart-echo",
 ]
