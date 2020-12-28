@@ -20,8 +20,8 @@ pub struct Universe {
 }
 
 impl Universe {
-    pub fn populate(&self) {
-        let mut rng = SmallRng::seed_from_u64(11181981);
+    pub fn populate(&self, seed: u64) {
+        let mut rng = SmallRng::seed_from_u64(seed);
         for _ in 0..(self.width * self.height / 8) {
             let x = rng.gen_range(0..self.width) as usize;
             let y = rng.gen_range(0..self.height) as usize;
