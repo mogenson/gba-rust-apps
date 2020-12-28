@@ -3,6 +3,13 @@ members = [
     "aux-display",
     "draw",
     "embedded-graphics-gba",
+    "game-of-life",
     "keypad",
     "uart-echo",
 ]
+
+[profile.release]
+codegen-units = 1
+debug = true
+incremental = false
+lto = true
