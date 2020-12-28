@@ -3,7 +3,8 @@ members = [
     "aux-display",
     "draw",
     "embedded-graphics-gba",
-    "game-of-life",
+    "gol4",
+    "gol5",
     "keypad",
     "uart-echo",
 ]
