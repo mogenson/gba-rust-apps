@@ -21,8 +21,8 @@ pub struct Universe {
 }
 
 impl Universe {
-    pub fn populate(&self) {
-        let mut rng = SmallRng::seed_from_u64(11181981);
+    pub fn populate(&self, seed: u64) {
+        let mut rng = SmallRng::seed_from_u64(seed);
         for _ in 0..(self.width * self.height / 8) {
             let x = rng.gen_range(0..self.width) as usize;
             let y = rng.gen_range(0..self.height) as usize;
@@ -57,7 +57,7 @@ impl Universe {
             .map(|(i, j)| self.alive(x + i, y + j))
             .sum();
 
-        match (self.alive(x, y), neighbors) {
+        match (Mode4::read(self.page, x as usize, y as usize).unwrap(), neighbors) {
             // rule 1: live cell with less than two live neighbors dies
             (ALIVE, x) if x < 2 => DEAD,
             // rule 2: live cell with 2 or 3 live neighbors lives
