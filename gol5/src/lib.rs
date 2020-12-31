@@ -1,4 +1,5 @@
 #![no_std]
+#![feature(exclusive_range_pattern)]
 
 use gba::{
     io::display::DISPCNT,
@@ -10,37 +11,26 @@ use rand::{
     {Rng, SeedableRng},
 };
 
-pub const ALIVE: Color = Color::from_rgb(0, 31, 0);
-pub const DEAD: Color = Color::from_rgb(0, 0, 0);
+const ALIVE: Color = Color::from_rgb(0, 31, 0);
+const DEAD: Color = Color::from_rgb(0, 0, 0);
+const WIDTH: i32 = 120;
+const HEIGHT: i32 = 80;
 
 pub struct Universe {
-    pub page: Page,
-    pub width: i32,
-    pub height: i32,
+    page: Page,
 }
 
 impl Universe {
-    pub fn populate(&self, seed: u64) {
-        let mut rng = SmallRng::seed_from_u64(seed);
-        for _ in 0..(self.width * self.height / 8) {
-            let x = rng.gen_range(0..self.width) as usize;
-            let y = rng.gen_range(0..self.height) as usize;
-            Mode5::write(self.page, x, y, ALIVE);
-        }
+    pub fn new() -> Self {
+        Universe { page: Page::Zero }
     }
 
-    fn alive(&self, x: i32, y: i32) -> u8 {
-        let color = if let Some(cell) = Mode5::read(self.page, x as usize, y as usize) {
-            cell
-        } else {
-            let x = ((x + self.width) % self.width) as usize;
-            let y = ((y + self.height) % self.height) as usize;
-            Mode5::read(self.page, x, y).unwrap()
-        };
-        if color == ALIVE {
-            1
-        } else {
-            0
+    pub fn populate(&self, seed: u64) {
+        let mut rng = SmallRng::seed_from_u64(seed);
+        for _ in 0..(WIDTH * HEIGHT / 8) {
+            let x = rng.gen_range(0..WIDTH) as usize;
+            let y = rng.gen_range(0..HEIGHT) as usize;
+            Mode5::write(self.page, x, y, ALIVE);
         }
     }
 
@@ -56,9 +46,20 @@ impl Universe {
             (1, 0),
         ];
 
-        let neighbors: u8 = NEIGHBORS
+        let neighbors = NEIGHBORS
             .iter()
-            .map(|(i, j)| self.alive(x + i, y + j))
+            .map(|(i, j)| {
+                let (col, row) = if let (x @ 0..WIDTH, y @ 0..HEIGHT) = (x + i, y + j) {
+                    (x, y)
+                } else {
+                    ((x + WIDTH) % WIDTH, (y + HEIGHT) % HEIGHT)
+                };
+                if Mode5::read(self.page, col as usize, row as usize).unwrap() == ALIVE {
+                    1
+                } else {
+                    0
+                }
+            })
             .sum();
 
         match (
@@ -85,8 +86,8 @@ impl Universe {
             (Page::Zero, false)
         };
 
-        for x in 0..self.width {
-            for y in 0..self.height {
+        for x in 0..WIDTH {
+            for y in 0..HEIGHT {
                 Mode5::write(page, x as usize, y as usize, self.next(x, y));
             }
         }

@@ -2,15 +2,16 @@
 #![feature(start)]
 
 use game_of_life_mode5::Universe;
-use gba::{
-    io::{
-        display::{DisplayControlSetting, DisplayMode, DISPCNT},
-        keypad::KEYINPUT,
-        timers::{TimerControlSetting, TM0CNT_H, TM0CNT_L},
-    },
-    vram::bitmap::{Mode5, Page},
+use gba::io::{
+    display::{DisplayControlSetting, DisplayMode, DISPCNT},
+    keypad::KEYINPUT,
+    timers::{TimerControlSetting, TM0CNT_H, TM0CNT_L},
 };
 use panic_abort as _;
+use voladdress::VolAddress;
+
+const BG2PA: VolAddress<u16> = unsafe { VolAddress::new(0x400_0020) };
+const BG2PD: VolAddress<u16> = unsafe { VolAddress::new(0x400_0026) };
 
 #[start]
 fn main(_argc: isize, _argv: *const *const u8) -> isize {
@@ -20,15 +21,15 @@ fn main(_argc: isize, _argv: *const *const u8) -> isize {
             .with_bg2(true),
     );
 
-    let mut universe = Universe {
-        page: Page::Zero,
-        width: Mode5::WIDTH as i32,
-        height: Mode5::HEIGHT as i32,
-    };
+    let mut universe = Universe::new();
+
+    // scale background
+    let scale: u16 = 1 << 7;
+    BG2PA.write(scale);
+    BG2PD.write(scale);
 
     // start free-running timer
     TM0CNT_H.write(TimerControlSetting::new().with_enabled(true));
-
     loop {
         // any button pressed
         if KEYINPUT.read() < 0x03FF {
