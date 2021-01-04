@@ -21,12 +21,13 @@ fn main(_argc: isize, _argv: *const *const u8) -> isize {
             .with_bg2(true),
     );
 
-    let mut universe = Universe::new();
-
     // scale background
     let scale: u16 = 1 << 7;
     BG2PA.write(scale);
     BG2PD.write(scale);
+
+    let mut universe = Universe::new();
+    universe.populate(0xDEADBEEF);
 
     // start free-running timer
     TM0CNT_H.write(TimerControlSetting::new().with_enabled(true));
