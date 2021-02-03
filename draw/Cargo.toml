@@ -6,8 +6,7 @@ edition = "2018"
 
 [dependencies]
 panic-abort = "0.3.2"
-#gba = { git = "https://github.com/rust-console/gba" }
-gba = { path = "../../gba" }
+gba = { git = "https://github.com/rust-console/gba" }
 embedded-graphics = "0.6.2"
 embedded-graphics-gba = { path = "../embedded-graphics-gba" }
 tinytga = { version = "0.3.2", features = ["graphics"] }
