@@ -1,37 +1,36 @@
 #![no_std]
 #![feature(start)]
 
-use game_of_life_mode4::{Universe, ALIVE, GREEN};
-use gba::{
-    io::{
-        display::{DisplayControlSetting, DisplayMode, DISPCNT},
-        keypad::KEYINPUT,
-        timers::{TimerControlSetting, TM0CNT_H, TM0CNT_L},
-    },
-    palram::index_palram_bg_8bpp,
-    vram::bitmap::{Mode4, Page},
+use game_of_life::Universe;
+use gba::io::{
+    display::{DisplayControlSetting, DisplayMode, DISPCNT},
+    keypad::KEYINPUT,
+    timers::{TimerControlSetting, TM0CNT_H, TM0CNT_L},
 };
 use panic_abort as _;
+use voladdress::VolAddress;
+
+const BG2PA: VolAddress<u16> = unsafe { VolAddress::new(0x400_0020) };
+const BG2PD: VolAddress<u16> = unsafe { VolAddress::new(0x400_0026) };
 
 #[start]
 fn main(_argc: isize, _argv: *const *const u8) -> isize {
     DISPCNT.write(
         DisplayControlSetting::new()
-            .with_mode(DisplayMode::Mode4)
+            .with_mode(DisplayMode::Mode5)
             .with_bg2(true),
     );
 
-    index_palram_bg_8bpp(ALIVE).write(GREEN);
+    // scale background
+    let scale: u16 = 1 << 7;
+    BG2PA.write(scale);
+    BG2PD.write(scale);
 
-    let mut universe = Universe {
-        page: Page::Zero,
-        width: Mode4::WIDTH as i32,
-        height: Mode4::HEIGHT as i32,
-    };
+    let mut universe = Universe::new();
+    universe.populate(0xDEADBEEF);
 
     // start free-running timer
     TM0CNT_H.write(TimerControlSetting::new().with_enabled(true));
-
     loop {
         // any button pressed
         if KEYINPUT.read() < 0x03FF {
