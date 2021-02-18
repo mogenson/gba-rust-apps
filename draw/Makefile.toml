@@ -1,35 +1,56 @@
 [config]
 skip_core_tasks = true
 
-[tasks.assemble]
-script = [
-'''
-mkdir -p ../target
-arm-none-eabi-as ../gba/crt0.s -o ../target/crt0.o
-'''
-]
+[tasks.mkdir]
+command = "mkdir"
+args = ["-p", "../target"]
 
-[tasks.build]
-dependencies = ["assemble"]
+[tasks.crt0]
+dependencies = ["mkdir"]
+command = "arm-none-eabi-as"
+args = ["../gba/crt0.s", "-o", "../target/crt0.o"]
+
+[tasks.build-debug]
+dependencies = ["crt0"]
+toolchain = "nightly"
+command = "cargo"
+args = ["build"]
+
+[tasks.build-release]
+dependencies = ["crt0"]
 toolchain = "nightly"
 command = "cargo"
 args = ["build", "--release"]
 
-[tasks.rom]
-dependencies = ["build"]
-script = [
-'''
-arm-none-eabi-objcopy -O binary \
-    ../target/thumbv4-none-agb/release/${CARGO_MAKE_CRATE_NAME} \
-    ../target/${CARGO_MAKE_CRATE_NAME}.gba
-gbafix ../target/${CARGO_MAKE_CRATE_NAME}.gba
-'''
+[tasks.build]
+alias = "build-debug"
+
+[tasks.objcopy]
+dependencies = ["build-release"]
+command = "arm-none-eabi-objcopy"
+args = [
+    "-O",
+    "binary",
+    "../target/thumbv4-none-agb/release/${CARGO_MAKE_CRATE_NAME}",
+    "../target/${CARGO_MAKE_CRATE_NAME}.gba",
 ]
 
-[tasks.mgba]
-dependencies = ["rom"]
+[tasks.run]
+dependencies = ["objcopy"]
 command = "mgba"
 args = ["--log-level=16", "../target/${CARGO_MAKE_CRATE_NAME}.gba"]
 
+[tasks.debug]
+dependencies = ["build-debug"]
+script = [
+'''
+mgba -g ../target/thumbv4-none-agb/debug/${CARGO_MAKE_CRATE_NAME} &
+script -q /dev/null -c \
+    "arm-none-eabi-gdb \
+        ../target/thumbv4-none-agb/debug/${CARGO_MAKE_CRATE_NAME} \
+        -ex 'target extended-remote :2345'"
+'''
+]
+
 [tasks.default]
-alias = "rom"
+alias = "objcopy"
