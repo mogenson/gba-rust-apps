@@ -3,6 +3,7 @@ members = [
     "draw",
     "embedded-graphics-gba",
     "game-of-life",
+    "gba",
     "keypad",
     "uart-echo",
 ]

@@ -5,5 +5,5 @@ authors = ["Michael Mogenson <michael.mogenson@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-gba = { git = "https://github.com/rust-console/gba" }
 embedded-graphics = "0.6.2"
+gba = { path = "../gba" }
