@@ -1,5 +1,5 @@
 [build]
-target = "thumbv4-none-agb.json"
+target = "gba/thumbv4-none-agb.json"
 
 [unstable]
 build-std = ["core"]

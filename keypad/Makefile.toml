@@ -5,7 +5,7 @@ skip_core_tasks = true
 script = [
 '''
 mkdir -p ../target
-arm-none-eabi-as ../crt0.s -o ../target/crt0.o
+arm-none-eabi-as ../gba/crt0.s -o ../target/crt0.o
 '''
 ]
 
